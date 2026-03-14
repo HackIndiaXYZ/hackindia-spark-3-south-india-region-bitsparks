@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>⚡ BITSPARKS — Student Productivity Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --blue-50:#eff6ff;--blue-100:#dbeafe;--blue-200:#bfdbfe;--blue-400:#60a5fa;
+  --blue-600:#2563eb;--blue-700:#1d4ed8;--blue-800:#1e40af;
+  --green-50:#f0fdf4;--green-100:#dcfce7;--green-400:#4ade80;
+  --green-500:#22c55e;--green-600:#16a34a;--green-700:#15803d;
+  --amber-50:#fffbeb;--amber-100:#fef3c7;--amber-500:#f59e0b;--amber-600:#d97706;
+  --red-50:#fef2f2;--red-100:#fee2e2;--red-500:#ef4444;--red-600:#dc2626;
+  --orange-100:#ffedd5;--orange-600:#ea580c;
+  --purple-50:#faf5ff;--purple-100:#f3e8ff;--purple-600:#9333ea;
+  --slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;
+  --slate-300:#cbd5e1;--slate-400:#94a3b8;--slate-500:#64748b;
+  --slate-600:#475569;--slate-700:#334155;--slate-800:#1e293b;--slate-900:#0f172a;
+  --white:#ffffff;
+  --shadow-card:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+  --shadow-hover:0 8px 30px rgba(0,0,0,.12);
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--slate-50);color:var(--slate-900);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--slate-100)}
+::-webkit-scrollbar-thumb{background:var(--slate-300);border-radius:3px}
+
+/* Layout */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:240px;background:var(--white);border-right:1px solid var(--slate-100);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s ease}
+.sidebar-logo{padding:18px 20px 14px;border-bottom:1px solid var(--slate-100)}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue-600),var(--green-600));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:15px}
+.logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:19px;background:linear-gradient(135deg,var(--blue-600),var(--green-600));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-sub{font-size:10px;color:var(--slate-400);margin-top:2px;font-weight:500}
+.nav{flex:1;padding:10px 10px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-md);cursor:pointer;font-size:13px;color:var(--slate-600);transition:all .15s;margin-bottom:2px;border-left:3px solid transparent;font-weight:500}
+.nav-item:hover{background:var(--slate-50);color:var(--slate-800)}
+.nav-item.active{background:linear-gradient(90deg,var(--blue-50),var(--green-50));color:var(--blue-700);border-left-color:var(--blue-600);font-weight:600}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.user-bar{padding:12px 14px;border-top:1px solid var(--slate-100)}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue-400),var(--green-400));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--white);border-bottom:1px solid var(--slate-100);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+.topbar-left{flex:1}
+.greeting{font-size:14px;font-weight:700;color:var(--slate-800)}
+.top-date{font-size:11px;color:var(--slate-400)}
+.top-pills{display:flex;gap:8px;align-items:center}
+.top-pill{font-size:11px;padding:4px 12px;border-radius:999px;font-weight:600}
+.pill-fire{background:var(--amber-50);color:var(--amber-600)}
+.pill-xp{background:var(--purple-50);color:var(--purple-600)}
+.content{flex:1;overflow-y:auto;padding:20px}
+.page{display:none;animation:slideUp .35s ease-out}
+.page.active{display:block}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* Typography */
+.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--slate-900);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--slate-500);margin-bottom:18px}
+.section-head{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--slate-800);margin-bottom:12px}
+
+/* Cards */
+.card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:18px}
+.card-lift{transition:transform .2s,box-shadow .2s}
+.card-lift:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+
+/* Grids */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:600px){.grid3{grid-template-columns:1fr 1fr}.sidebar{position:fixed;left:0;top:0;height:100%;z-index:100;transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex!important}}
+
+/* Stat cards */
+.stat-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;align-items:flex-start;justify-content:space-between}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-400);margin-bottom:5px}
+.stat-value{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--slate-900);line-height:1}
+.stat-sub{font-size:11px;color:var(--slate-400);margin-top:3px}
+.stat-icon-wrap{width:44px;height:44px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:var(--radius-md);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;border:none;transition:all .15s;outline:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--blue-600);color:#fff}
+.btn-primary:hover{background:var(--blue-700)}
+.btn-success{background:var(--green-600);color:#fff}
+.btn-success:hover{background:var(--green-700)}
+.btn-secondary{background:var(--white);color:var(--blue-600);border:1.5px solid var(--blue-200)}
+.btn-secondary:hover{background:var(--blue-50)}
+.btn-ghost{background:transparent;color:var(--slate-500);padding:7px 14px}
+.btn-ghost:hover{background:var(--slate-100);color:var(--slate-700)}
+.btn-danger{background:var(--red-50);color:var(--red-600)}
+.btn-danger:hover{background:var(--red-100)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:8px}
+.btn-full{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Inputs */
+.input{width:100%;padding:9px 14px;border-radius:var(--radius-md);border:1.5px solid var(--slate-200);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--slate-800);background:var(--white);transition:all .2s;outline:none}
+.input:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.input::placeholder{color:var(--slate-400)}
+.textarea{resize:none;line-height:1.6}
+select.input{cursor:pointer}
+.label{display:block;font-size:11px;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.form-row{margin-bottom:12px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-blue{background:var(--blue-50);color:var(--blue-700)}
+.badge-green{background:var(--green-100);color:var(--green-700)}
+.badge-amber{background:var(--amber-100);color:var(--amber-600)}
+.badge-red{background:var(--red-100);color:var(--red-600)}
+.badge-orange{background:var(--orange-100);color:var(--orange-600)}
+.badge-purple{background:var(--purple-100);color:var(--purple-600)}
+.badge-slate{background:var(--slate-100);color:var(--slate-600)}
+
+/* Progress bar */
+.progress-track{height:8px;background:var(--slate-100);border-radius:999px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;border-radius:999px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* Banner */
+.banner{background:linear-gradient(135deg,#1e40af 0%,#1d4ed8 40%,#15803d 100%);border-radius:var(--radius-xl);padding:22px 24px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+.banner::after{content:'';position:absolute;right:60px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.04)}
+.banner-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;position:relative}
+.banner-sub{font-size:12px;opacity:.8;margin-bottom:14px;position:relative}
+.quote-box{background:rgba(255,255,255,.15);border-radius:var(--radius-md);padding:10px 14px;max-width:500px;position:relative}
+.quote-text{font-size:13px;font-style:italic;opacity:.95}
+.quote-author{font-size:11px;opacity:.7;margin-top:4px}
+
+/* Tabs */
+.tab-bar{display:flex;gap:4px;background:var(--slate-100);padding:4px;border-radius:var(--radius-md);margin-bottom:16px;width:fit-content}
+.tab{padding:7px 16px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate-500);transition:all .15s;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif}
+.tab.active{background:var(--white);color:var(--blue-700);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:slideUp .25s ease-out}
+
+/* Toast */
+.toast{position:fixed;top:16px;right:16px;background:var(--white);border-radius:var(--radius-md);box-shadow:0 8px 32px rgba(0,0,0,.15);padding:12px 18px;font-size:13px;font-weight:600;color:var(--slate-800);z-index:999;transform:translateY(-60px);opacity:0;transition:all .3s ease;border-left:4px solid var(--green-500);max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-left-color:var(--red-500)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--white);border-radius:var(--radius-xl);box-shadow:0 24px 80px rgba(0,0,0,.2);padding:24px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--slate-800);margin-bottom:16px}
+.modal-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:var(--slate-400);line-height:1}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px;border-radius:8px}
+.hamburger span{width:20px;height:2px;background:var(--slate-600);border-radius:2px;transition:all .3s}
+
+/* Pomodoro Timer */
+.timer-container{display:flex;flex-direction:column;align-items:center;gap:16px}
+.timer-ring-wrap{position:relative;width:150px;height:150px}
+.timer-ring-svg{width:150px;height:150px;transform:rotate(-90deg)}
+.timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.timer-num{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:500;color:var(--slate-800);line-height:1}
+.timer-label{font-size:11px;color:var(--slate-400);margin-top:4px;font-weight:500}
+.mode-tabs{display:flex;gap:4px;background:var(--slate-100);padding:3px;border-radius:10px;width:100%}
+.mode-tab{flex:1;padding:6px 8px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;color:var(--slate-500);border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;text-align:center;transition:all .15s}
+.mode-tab.active{background:var(--white);color:var(--blue-700);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* Mood selector */
+.mood-selector{display:flex;justify-content:space-between;margin-bottom:14px}
+.mood-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:var(--radius-md);cursor:pointer;border:2px solid transparent;transition:all .15s;background:none}
+.mood-btn:hover{background:var(--slate-50);transform:scale(1.1)}
+.mood-btn.selected{background:var(--blue-50);border-color:var(--blue-300);transform:scale(1.15)}
+.mood-emoji-big{font-size:26px}
+.mood-label-sm{font-size:10px;color:var(--slate-500);font-weight:600}
+
+/* Emotion tags */
+.emotion-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.emotion-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--slate-200);color:var(--slate-600);background:var(--white);transition:all .15s}
+.emotion-tag:hover{border-color:var(--blue-300)}
+.emotion-tag.selected{background:var(--blue-600);color:#fff;border-color:var(--blue-600)}
+
+/* Breathing */
+.breathing-outer{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 1s ease-in-out;background:var(--blue-100);margin:0 auto}
+.breathing-inner{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--blue-200);transition:all 1s ease-in-out}
+.breathing-core{width:65px;height:65px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--blue-400);font-size:24px;transition:all 1s ease-in-out}
+
+/* Task item */
+.task-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-md);border:1.5px solid var(--slate-100);margin-bottom:6px;transition:all .15s;background:var(--white)}
+.task-item:hover{border-color:var(--blue-200);background:var(--blue-50)}
+.task-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--slate-300);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.task-check:hover{border-color:var(--blue-500)}
+.task-check.done{background:var(--green-500);border-color:var(--green-500);color:#fff;font-size:10px}
+.task-title{flex:1;font-size:13px;font-weight:600;color:var(--slate-700)}
+.task-title.done{text-decoration:line-through;color:var(--slate-400)}
+.task-del{color:var(--slate-300);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;border:none;background:none}
+.task-del:hover{color:var(--red-500);background:var(--red-50)}
+
+/* Journal */
+.journal-card{background:var(--slate-50);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:8px;border-left:3px solid var(--amber-500)}
+.journal-date{font-size:10px;color:var(--slate-400);font-weight:600;margin-bottom:4px}
+.journal-title{font-size:13px;font-weight:700;color:var(--slate-800);margin-bottom:4px}
+.journal-preview{font-size:12px;color:var(--slate-500);line-height:1.5}
+
+/* Exam card */
+.exam-card{border-radius:var(--radius-md);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.exam-red{background:var(--red-50);border:1.5px solid var(--red-100)}
+.exam-amber{background:var(--amber-50);border:1.5px solid var(--amber-100)}
+.exam-blue{background:var(--blue-50);border:1.5px solid var(--blue-100)}
+.exam-green{background:var(--green-50);border:1.5px solid var(--green-100)}
+.exam-days-big{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1}
+
+/* Goal card */
+.goal-card{border-radius:var(--radius-md);padding:12px 14px;border:1.5px solid var(--slate-100);margin-bottom:8px;background:var(--white)}
+.goal-prog-btns{display:flex;gap:4px;margin-top:8px}
+.prog-btn{flex:1;padding:4px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--slate-200);background:var(--white);color:var(--slate-500);font-family:'Plus Jakarta Sans',sans-serif;transition:all .1s}
+.prog-btn:hover{background:var(--blue-50);border-color:var(--blue-300);color:var(--blue-700)}
+.prog-btn.active{background:var(--blue-600);color:#fff;border-color:var(--blue-600)}
+
+/* Scholarship card */
+.sch-card{background:var(--slate-50);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;border:1.5px solid var(--slate-100)}
+.sch-name{font-size:14px;font-weight:700;color:var(--slate-800);margin-bottom:4px}
+.sch-elig{font-size:12px;color:var(--slate-500);margin-bottom:8px}
+.sch-footer{display:flex;justify-content:space-between;align-items:center}
+
+/* Course card */
+.course-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;transition:all .2s}
+.course-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+
+/* News item */
+.news-item{background:var(--white);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;border:1.5px solid var(--slate-100);transition:all .15s}
+.news-item:hover{border-color:var(--blue-200)}
+
+/* Quiz */
+.quiz-option{display:block;width:100%;text-align:left;padding:11px 14px;border-radius:var(--radius-md);border:1.5px solid var(--slate-200);margin-bottom:8px;font-size:13px;cursor:pointer;color:var(--slate-700);background:var(--white);transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500}
+.quiz-option:hover{border-color:var(--blue-400);background:var(--blue-50);color:var(--blue-700)}
+.quiz-option.selected{border-color:var(--blue-600);background:var(--blue-50);color:var(--blue-700);font-weight:700}
+
+/* Skill bar */
+.skill-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;margin-bottom:10px}
+.skill-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.skill-tag{font-size:10px;padding:2px 8px;border-radius:999px;background:var(--slate-100);color:var(--slate-600);font-weight:500}
+
+/* Budget slider */
+.budget-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--slate-200);outline:none;cursor:pointer}
+.budget-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue-600);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+
+/* Wellness tip */
+.tip-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;transition:all .2s}
+.tip-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+
+/* Community group */
+.group-card{background:var(--white);border-radius:var(--radius-md);border:1.5px solid var(--slate-100);padding:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;transition:all .15s}
+.group-card:hover{border-color:var(--blue-200);background:var(--blue-50)}
+
+/* Chart container */
+.chart-wrap{height:160px;position:relative}
+
+/* Achievement badge */
+.achv-badge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;border-radius:var(--radius-md);text-align:center}
+.achv-badge.earned{background:var(--amber-50);border:1.5px solid var(--amber-100)}
+.achv-badge.locked{background:var(--slate-50);border:1.5px solid var(--slate-100);opacity:.4;filter:grayscale(1)}
+.achv-icon{font-size:22px}
+.achv-label{font-size:10px;font-weight:600;color:var(--slate-600);line-height:1.3}
+
+/* Auth screens */
+.auth-screen{display:flex;min-height:100vh;background:var(--slate-50);align-items:center;justify-content:center;padding:20px}
+.auth-card{background:var(--white);border-radius:var(--radius-xl);box-shadow:0 8px 48px rgba(0,0,0,.12);width:100%;max-width:420px;padding:36px}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.auth-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--slate-800);margin-bottom:4px}
+.auth-sub{font-size:13px;color:var(--slate-500);margin-bottom:24px}
+.auth-error{background:var(--red-50);color:var(--red-600);padding:10px 14px;border-radius:var(--radius-md);font-size:13px;font-weight:600;margin-bottom:16px;display:none}
+.auth-link{text-align:center;font-size:13px;color:var(--slate-500);margin-top:20px}
+.auth-link a{color:var(--blue-600);font-weight:700;cursor:pointer;text-decoration:none}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99}
+
+/* Responsive fix */
+@media(max-width:768px){
+  .grid3{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .content{padding:14px}
+  .topbar{padding:10px 14px}
+  .banner-title{font-size:17px}
+}
+@media(max-width:480px){
+  .grid3{grid-template-columns:1fr}
+  .grid4{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREENS -->
+<div id="authScreen" style="display:none">
+  <!-- Login -->
+  <div id="loginScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-icon">B</div>
+        <div>
+          <div class="logo-name">BITSPARKS</div>
+          <div class="logo-sub">Student Productivity Platform</div>
+        </div>
+      </div>
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Sign in to continue your learning journey</div>
+      <div id="loginError" class="auth-error"></div>
+      <div class="form-row">
+        <label class="label">Email</label>
+        <input id="loginEmail" type="email" class="input" placeholder="student@college.edu"/>
+      </div>
+      <div class="form-row">
+        <label class="label">Password</label>
+        <input id="loginPass" type="password" class="input" placeholder="••••••••"/>
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="doLogin()">Sign In →</button>
+      <div class="auth-link">New to BITSPARKS? <a onclick="showRegister()">Create account</a></div>
+      <div style="margin-top:16px;padding:10px;background:var(--blue-50);border-radius:var(--radius-md);text-align:center;font-size:12px;color:var(--blue-700)">
+        💡 Demo: Register with any email, then log in
+      </div>
+    </div>
+  </div>
+
+  <!-- Register -->
+  <div id="registerScreen" class="auth-screen" style="display:none">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-icon">B</div>
+        <div><div class="logo-name">BITSPARKS</div><div class="logo-sub">Create your account</div></div>
+      </div>
+      <div class="auth-title">Join BITSPARKS</div>
+      <div class="auth-sub">Boost your academic productivity today</div>
+      <div id="regError" class="auth-error"></div>
+      <div class="form-grid">
+        <div class="form-row"><label class="label">Full Name *</label><input id="regName" type="text" class="input" placeholder="Arjun Sharma"/></div>
+        <div class="form-row"><label class="label">Email *</label><input id="regEmail" type="email" class="input" placeholder="you@college.edu"/></div>
+      </div>
+      <div class="form-row"><label class="label">Password *</label><input id="regPass" type="password" class="input" placeholder="Minimum 6 characters"/></div>
+      <div class="form-row"><label class="label">College / University</label><input id="regCollege" type="text" class="input" placeholder="e.g. Anna University"/></div>
+      <div class="form-grid">
+        <div class="form-row"><label class="label">Course</label><input id="regCourse" type="text" class="input" placeholder="B.Tech CSE"/></div>
+        <div class="form-row"><label class="label">Year</label>
+          <select id="regYear" class="input"><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doRegister()">Create Account →</button>
+      <div class="auth-link">Already have an account? <a onclick="showLogin()">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none">
+  <div class="app">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-wrap">
+          <div class="logo-icon">B</div>
+          <div>
+            <div class="logo-name">BITSPARKS</div>
+            <div class="logo-sub">Student Productivity Platform</div>
+          </div>
+        </div>
+      </div>
+      <nav class="nav">
+        <div class="nav-item active" data-page="dashboard"><span class="nav-icon">🏠</span>Dashboard</div>
+        <div class="nav-item" data-page="study"><span class="nav-icon">📚</span>Study & Focus</div>
+        <div class="nav-item" data-page="mental"><span class="nav-icon">🧠</span>Mental Health</div>
+        <div class="nav-item" data-page="career"><span class="nav-icon">🚀</span>Career Hub</div>
+        <div class="nav-item" data-page="academic"><span class="nav-icon">🎓</span>Academic Planner</div>
+        <div class="nav-item" data-page="finance"><span class="nav-icon">💰</span>Financial Support</div>
+        <div class="nav-item" data-page="social"><span class="nav-icon">🤝</span>Social Well-being</div>
+        <div class="nav-item" data-page="skills"><span class="nav-icon">⚡</span>Future Skills</div>
+      </nav>
+      <div class="user-bar">
+        <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="navigate('profile')">
+          <div class="user-avatar" id="sidebarAvatar">A</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--slate-800)" id="sidebarName">Student</div>
+            <div style="font-size:11px;color:var(--slate-400)" id="sidebarCollege">Add your college</div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <button class="btn btn-ghost btn-sm" style="color:var(--red-500);padding:4px 0;font-size:12px" onclick="logout()">← Sign out</button>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Main -->
+    <div class="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="hamburger" id="hamburger" onclick="toggleSidebar()">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="topbar-left">
+            <div class="greeting" id="topGreeting">Good morning!</div>
+            <div class="top-date" id="topDate"></div>
+          </div>
+        </div>
+        <div class="top-pills">
+          <span class="top-pill pill-fire">🔥 <span id="streakPill">0</span> day streak</span>
+          <span class="top-pill pill-xp">⚡ <span id="xpPill">0</span> XP</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+          <div class="banner">
+            <div class="banner-title" id="bannerTitle">Welcome back! 🎯</div>
+            <div class="banner-sub" id="bannerSub">Your productivity hub</div>
+            <div class="quote-box">
+              <div class="quote-text" id="quoteText">"The secret of getting ahead is getting started."</div>
+              <div class="quote-author" id="quoteAuthor">— Mark Twain</div>
+            </div>
+          </div>
+          <div class="grid4" id="statsGrid"></div>
+          <div class="grid2">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <div class="section-head" style="margin-bottom:0">Weekly Study Time</div>
+                <span style="font-size:11px;color:var(--blue-600);cursor:pointer;font-weight:600" onclick="navigate('study')">View all →</span>
+              </div>
+              <div class="chart-wrap"><canvas id="weeklyChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <div class="section-head" style="margin-bottom:0">Upcoming Tasks</div>
+                <span style="font-size:11px;color:var(--blue-600);cursor:pointer;font-weight:600" onclick="navigate('study')">Manage all →</span>
+              </div>
+              <div id="dashTasks"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-head">Quick Start</div>
+            <div class="grid4">
+              <button class="btn btn-secondary" onclick="navigate('study')">⏱️ Pomodoro</button>
+              <button class="btn btn-secondary" onclick="navigate('mental')">😊 Log Mood</button>
+              <button class="btn btn-secondary" onclick="openAddTask()">📝 New Task</button>
+              <button class="btn btn-secondary" onclick="navigate('mental')">📓 Journal</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STUDY -->
+        <div class="page" id="page-study">
+          <div class="page-title">📚 Study & Focus</div>
+          <div class="page-sub">Pomodoro timer, task manager and productivity tracker</div>
+          <div class="grid2">
+            <!-- Pomodoro -->
+            <div class="card">
+              <div class="section-head">🍅 Pomodoro Timer</div>
+              <div class="mode-tabs">
+                <button class="mode-tab active" onclick="setTimerMode('work',25)" id="modeWork">⏳ Focus 25m</button>
+                <button class="mode-tab" onclick="setTimerMode('break',5)" id="modeBreak">☕ Break 5m</button>
+                <button class="mode-tab" onclick="setTimerMode('long',15)" id="modeLong">🌿 Long 15m</button>
+              </div>
+              <div style="margin:16px 0">
+                <div class="timer-container">
+                  <div class="timer-ring-wrap">
+                    <svg class="timer-ring-svg" viewBox="0 0 150 150">
+                      <circle cx="75" cy="75" r="65" fill="none" stroke="var(--slate-100)" stroke-width="10"/>
+                      <circle id="timerRing" cx="75" cy="75" r="65" fill="none" stroke="var(--blue-600)" stroke-width="10" stroke-linecap="round"
+                        stroke-dasharray="408.41" stroke-dashoffset="0"/>
+                    </svg>
+                    <div class="timer-center">
+                      <div class="timer-num" id="timerDisplay">25:00</div>
+                      <div class="timer-label" id="timerLabel">Focus Time</div>
+                    </div>
+                  </div>
+                  <input id="timerSubject" type="text" class="input" placeholder="What are you studying? (optional)" style="text-align:center;width:100%"/>
+                  <div style="display:flex;gap:8px">
+                    <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()">▶ Start</button>
+                    <button class="btn btn-ghost" onclick="resetTimer()">↺ Reset</button>
+                  </div>
+                  <div style="font-size:12px;color:var(--slate-400);text-align:center">🔥 Cycles today: <strong id="cycleCount">0</strong></div>
+                </div>
+              </div>
+            </div>
+            <!-- Task Manager -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div class="section-head" style="margin-bottom:0">📋 Task Manager</div>
+                <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ New Task</button>
+              </div>
+              <div class="tab-bar" style="margin-bottom:10px">
+                <button class="tab active" onclick="filterTasks('all',this)">All</button>
+                <button class="tab" onclick="filterTasks('todo',this)">To Do</button>
+                <button class="tab" onclick="filterTasks('in-progress',this)">In Progress</button>
+                <button class="tab" onclick="filterTasks('done',this)">Done</button>
+              </div>
+              <div id="taskList" style="max-height:320px;overflow-y:auto"></div>
+            </div>
+          </div>
+          <!-- Study Tips -->
+          <div class="card">
+            <div class="section-head">💡 Study Tips</div>
+            <div class="grid3">
+              <div style="background:var(--blue-50);border-radius:var(--radius-md);padding:14px"><div style="font-size:22px;margin-bottom:6px">🧠</div><div style="font-size:13px;font-weight:700;color:var(--slate-800);margin-bottom:4px">Active Recall</div><div style="font-size:12px;color:var(--slate-500)">Test yourself instead of re-reading. Retrieval practice boosts retention by 50%.</div></div>
+              <div style="background:var(--green-50);border-radius:var(--radius-md);padding:14px"><div style="font-size:22px;margin-bottom:6px">📅</div><div style="font-size:13px;font-weight:700;color:var(--slate-800);margin-bottom:4px">Spaced Repetition</div><div style="font-size:12px;color:var(--slate-500)">Review at intervals: 1 day, 3 days, 7 days, 21 days for lasting memory.</div></div>
+              <div style="background:var(--amber-50);border-radius:var(--radius-md);padding:14px"><div style="font-size:22px;margin-bottom:6px">🎯</div><div style="font-size:13px;font-weight:700;color:var(--slate-800);margin-bottom:4px">Single Tasking</div><div style="font-size:12px;color:var(--slate-500)">Focus on one subject at a time. Multitasking reduces productivity by up to 40%.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MENTAL HEALTH -->
+        <div class="page" id="page-mental">
+          <div class="page-title">🧠 Mental Health Support</div>
+          <div class="page-sub">Track your mood, journal your thoughts, and practice mindfulness</div>
+          <div class="grid2">
+            <!-- Mood Tracker -->
+            <div class="card">
+              <div class="section-head">😊 Mood Tracker</div>
+              <div style="font-size:12px;color:var(--slate-500);margin-bottom:12px">How are you feeling right now?</div>
+              <div class="mood-selector" id="moodSelector">
+                <button class="mood-btn" data-mood="1" onclick="selectMood(1)"><div class="mood-emoji-big">😞</div><div class="mood-label-sm">Terrible</div></button>
+                <button class="mood-btn" data-mood="2" onclick="selectMood(2)"><div class="mood-emoji-big">😕</div><div class="mood-label-sm">Bad</div></button>
+                <button class="mood-btn" data-mood="3" onclick="selectMood(3)"><div class="mood-emoji-big">😐</div><div class="mood-label-sm">Okay</div></button>
+                <button class="mood-btn" data-mood="4" onclick="selectMood(4)"><div class="mood-emoji-big">😊</div><div class="mood-label-sm">Good</div></button>
+                <button class="mood-btn" data-mood="5" onclick="selectMood(5)"><div class="mood-emoji-big">😄</div><div class="mood-label-sm">Excellent</div></button>
+              </div>
+              <div class="emotion-grid" id="emotionGrid"></div>
+              <textarea id="moodNote" class="input textarea" rows="2" placeholder="Any notes? (optional)" style="margin-bottom:10px"></textarea>
+              <button class="btn btn-primary btn-full" onclick="logMood()">Log Mood</button>
+              <div style="margin-top:14px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--slate-500);margin-bottom:6px">
+                  <span>7-Day Mood Trend</span><span id="avgMoodLabel"></span>
+                </div>
+                <div class="chart-wrap" style="height:100px"><canvas id="moodChart"></canvas></div>
+              </div>
+            </div>
+            <!-- Right column -->
+            <div>
+              <!-- Quote -->
+              <div style="background:linear-gradient(135deg,var(--blue-600),var(--green-600));border-radius:var(--radius-lg);padding:18px;color:#fff;margin-bottom:14px">
+                <div style="font-size:12px;opacity:.7;margin-bottom:8px;font-weight:600">💬 Daily Motivation</div>
+                <div style="font-size:15px;font-style:italic;margin-bottom:8px;line-height:1.5" id="mentalQuote">"Loading..."</div>
+                <div style="font-size:11px;opacity:.7" id="mentalQuoteAuthor"></div>
+                <button class="btn" style="margin-top:10px;background:rgba(255,255,255,.2);color:#fff;font-size:12px;padding:6px 14px" onclick="newQuote()">🔄 New Quote</button>
+              </div>
+              <!-- Breathing -->
+              <div class="card">
+                <div class="section-head">🌬️ Guided Breathing</div>
+                <div style="font-size:12px;color:var(--slate-500);text-align:center;margin-bottom:14px" id="breathLabel">Press start — 4-4-4 box breathing</div>
+                <div class="breathing-outer" id="breathOuter">
+                  <div class="breathing-inner" id="breathInner">
+                    <div class="breathing-core" id="breathCore">🌊</div>
+                  </div>
+                </div>
+                <div style="text-align:center;margin:12px 0;font-size:20px;font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--slate-700)" id="breathCount"></div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <div style="flex:1;background:var(--blue-50);border-radius:8px;padding:8px;text-align:center;font-size:11px;color:var(--blue-700)"><strong>4s</strong><br>Inhale</div>
+                  <div style="flex:1;background:var(--amber-50);border-radius:8px;padding:8px;text-align:center;font-size:11px;color:var(--amber-600)"><strong>4s</strong><br>Hold</div>
+                  <div style="flex:1;background:var(--green-50);border-radius:8px;padding:8px;text-align:center;font-size:11px;color:var(--green-700)"><strong>4s</strong><br>Exhale</div>
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:12px" id="breathBtn" onclick="toggleBreathing()">▶ Start Breathing</button>
+                <div style="text-align:center;font-size:11px;color:var(--slate-400);margin-top:6px">Cycles: <strong id="breathCycles">0</strong></div>
+              </div>
+            </div>
+          </div>
+          <!-- Journal -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <div>
+                <div class="section-head" style="margin-bottom:2px">📓 Daily Journal</div>
+                <div style="font-size:11px;color:var(--slate-400)">🔒 Private — only you can see this</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openJournalModal()">+ New Entry</button>
+            </div>
+            <div id="journalList"></div>
+          </div>
+          <!-- Resources -->
+          <div style="background:var(--amber-50);border:1.5px solid var(--amber-100);border-radius:var(--radius-lg);padding:18px">
+            <div style="font-size:14px;font-weight:700;color:var(--amber-700);margin-bottom:12px">🆘 Need Support? (India Helplines)</div>
+            <div class="grid3">
+              <div style="background:var(--white);border-radius:var(--radius-md);padding:12px"><div style="font-size:10px;font-weight:700;color:var(--amber-600);margin-bottom:3px">Counselling</div><div style="font-size:13px;font-weight:700;color:var(--slate-800)">iCall (TISS)</div><div style="font-size:13px;color:var(--blue-600);font-family:'JetBrains Mono',monospace;font-weight:500">9152987821</div><div style="font-size:10px;color:var(--slate-400)">Mon–Sat, 8am–10pm</div></div>
+              <div style="background:var(--white);border-radius:var(--radius-md);padding:12px"><div style="font-size:10px;font-weight:700;color:var(--amber-600);margin-bottom:3px">Crisis Support</div><div style="font-size:13px;font-weight:700;color:var(--slate-800)">Vandrevala Foundation</div><div style="font-size:13px;color:var(--blue-600);font-family:'JetBrains Mono',monospace;font-weight:500">1860-2662-345</div><div style="font-size:10px;color:var(--slate-400)">24/7 Available</div></div>
+              <div style="background:var(--white);border-radius:var(--radius-md);padding:12px"><div style="font-size:10px;font-weight:700;color:var(--amber-600);margin-bottom:3px">Mental Health</div><div style="font-size:13px;font-weight:700;color:var(--slate-800)">NIMHANS Helpline</div><div style="font-size:13px;color:var(--blue-600);font-family:'JetBrains Mono',monospace;font-weight:500">080-46110007</div><div style="font-size:10px;color:var(--slate-400)">Mon–Sat, 8am–8pm</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAREER -->
+        <div class="page" id="page-career">
+          <div class="page-title">🚀 Career Guidance Hub</div>
+          <div class="page-sub">Discover your ideal career path and explore opportunities</div>
+          <div class="tab-bar">
+            <button class="tab active" onclick="careerTab('quiz',this)">🎯 Aptitude Quiz</button>
+            <button class="tab" onclick="careerTab('internships',this)">💼 Internships</button>
+            <button class="tab" onclick="careerTab('skills',this)">🛠 Skill Map</button>
+          </div>
+          <div class="tab-content active" id="career-quiz">
+            <div id="quizArea" style="max-width:520px"></div>
+          </div>
+          <div class="tab-content" id="career-internships">
+            <div class="grid2" id="internshipGrid"></div>
+          </div>
+          <div class="tab-content" id="career-skills">
+            <div id="skillGrid"></div>
+          </div>
+        </div>
+
+        <!-- ACADEMIC -->
+        <div class="page" id="page-academic">
+          <div class="page-title">🎓 Academic Planner</div>
+          <div class="page-sub">Track exams, set goals, and plan your revision schedule</div>
+          <div class="grid2">
+            <!-- Exams -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div class="section-head" style="margin-bottom:0">📅 Exam Countdowns</div>
+                <button class="btn btn-primary btn-sm" onclick="openExamModal()">+ Add Exam</button>
+              </div>
+              <div id="examList" style="max-height:380px;overflow-y:auto"></div>
+            </div>
+            <!-- Goals -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div class="section-head" style="margin-bottom:0">🎯 Goals & Progress</div>
+                <button class="btn btn-primary btn-sm" onclick="openGoalModal()">+ Add Goal</button>
+              </div>
+              <div id="goalList" style="max-height:380px;overflow-y:auto"></div>
+            </div>
+          </div>
+          <!-- Revision tips -->
+          <div class="card">
+            <div class="section-head">📖 Revision Strategy</div>
+            <div class="grid3">
+              <div style="background:var(--green-50);border:1.5px solid var(--green-100);border-radius:var(--radius-md);padding:14px"><div style="font-size:13px;font-weight:700;color:var(--green-700);margin-bottom:8px">1 Week Before</div><ul style="font-size:12px;color:var(--slate-600);list-style:none;space-y:4px"><li>• Complete all chapters</li><li>• Practice previous year papers</li><li>• Focus on weak areas</li><li>• Create mind maps</li></ul></div>
+              <div style="background:var(--amber-50);border:1.5px solid var(--amber-100);border-radius:var(--radius-md);padding:14px"><div style="font-size:13px;font-weight:700;color:var(--amber-600);margin-bottom:8px">3 Days Before</div><ul style="font-size:12px;color:var(--slate-600);list-style:none"><li>• Quick revision of all chapters</li><li>• Formula sheets & shortcuts</li><li>• Solve sample questions</li><li>• Sleep 8 hours daily</li></ul></div>
+              <div style="background:var(--red-50);border:1.5px solid var(--red-100);border-radius:var(--radius-md);padding:14px"><div style="font-size:13px;font-weight:700;color:var(--red-600);margin-bottom:8px">1 Day Before</div><ul style="font-size:12px;color:var(--slate-600);list-style:none"><li>• Light revision only</li><li>• Review notes/mind maps</li><li>• Prepare stationery & ID</li><li>• Sleep early — no all-nighters!</li></ul></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FINANCE -->
+        <div class="page" id="page-finance">
+          <div class="page-title">💰 Financial Support</div>
+          <div class="page-sub">Scholarships, part-time jobs, and budget planning</div>
+          <div class="tab-bar">
+            <button class="tab active" onclick="financeTab('scholarships',this)">🎓 Scholarships</button>
+            <button class="tab" onclick="financeTab('jobs',this)">💼 Part-time Jobs</button>
+            <button class="tab" onclick="financeTab('budget',this)">📊 Budget Planner</button>
+          </div>
+          <div class="tab-content active" id="finance-scholarships"><div id="schList"></div></div>
+          <div class="tab-content" id="finance-jobs"><div class="grid2" id="jobGrid"></div></div>
+          <div class="tab-content" id="finance-budget">
+            <div class="grid2">
+              <div class="card">
+                <div class="section-head">Monthly Budget Planner</div>
+                <div class="form-row"><label class="label">Monthly Income (₹)</label><input id="incomeInput" type="number" class="input" value="5000" oninput="updateBudget()"/></div>
+                <div id="budgetSliders"></div>
+              </div>
+              <div class="card">
+                <div class="section-head">Budget Summary</div>
+                <div id="budgetSummary"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SOCIAL -->
+        <div class="page" id="page-social">
+          <div class="page-title">🤝 Social Well-being</div>
+          <div class="page-sub">Community, digital wellness tips, and social balance</div>
+          <div class="section-head">💡 Digital Wellness Tips</div>
+          <div class="grid3" id="tipGrid"></div>
+          <div class="section-head" style="margin-top:6px">👥 Student Community Groups</div>
+          <div id="groupList"></div>
+          <div style="background:linear-gradient(135deg,var(--purple-50),var(--blue-50));border-radius:var(--radius-lg);padding:18px;margin-top:14px">
+            <div class="section-head">⚖️ Social-Study Balance</div>
+            <div class="grid3">
+              <div style="background:var(--white);border-radius:var(--radius-md);padding:14px;text-align:center"><div style="font-size:22px;margin-bottom:6px">📚</div><div style="font-size:13px;font-weight:700;color:var(--slate-800)">Study Time</div><div class="badge badge-blue" style="margin-top:6px">6–8 hrs/day</div></div>
+              <div style="background:var(--white);border-radius:var(--radius-md);padding:14px;text-align:center"><div style="font-size:22px;margin-bottom:6px">👫</div><div style="font-size:13px;font-weight:700;color:var(--slate-800)">Social Time</div><div class="badge badge-purple" style="margin-top:6px">1–2 hrs/day</div></div>
+              <div style="background:var(--white);border-radius:var(--radius-md);padding:14px;text-align:center"><div style="font-size:22px;margin-bottom:6px">🧘</div><div style="font-size:13px;font-weight:700;color:var(--slate-800)">Me Time</div><div class="badge badge-green" style="margin-top:6px">30–60 min/day</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SKILLS -->
+        <div class="page" id="page-skills">
+          <div class="page-title">⚡ Future Skills Zone</div>
+          <div class="page-sub">Free courses, digital skills, and education news</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px" id="courseFilters"></div>
+          <div class="grid3" id="courseGrid"></div>
+          <div class="section-head">📰 Education News</div>
+          <div id="newsList"></div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="page" id="page-profile">
+          <div class="page-title">👤 My Profile</div>
+          <div class="page-sub">Manage your account and preferences</div>
+          <div id="profileBanner" style="margin-bottom:16px"></div>
+          <div class="grid2">
+            <div class="card">
+              <div class="section-head">Personal Information</div>
+              <div class="form-row"><label class="label">Full Name</label><input id="profName" class="input" type="text"/></div>
+              <div class="form-row"><label class="label">College / University</label><input id="profCollege" class="input" type="text" placeholder="e.g. Anna University"/></div>
+              <div class="form-grid">
+                <div class="form-row"><label class="label">Course</label><input id="profCourse" class="input" type="text" placeholder="B.Tech CSE"/></div>
+                <div class="form-row"><label class="label">Year</label>
+                  <select id="profYear" class="input"><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option></select>
+                </div>
+              </div>
+              <div class="form-row"><label class="label">Bio</label><textarea id="profBio" class="input textarea" rows="3" placeholder="Tell us about yourself..."></textarea></div>
+              <button class="btn btn-primary" onclick="saveProfile()">💾 Save Changes</button>
+            </div>
+            <div class="card">
+              <div class="section-head">Preferences & Achievements</div>
+              <div class="form-row">
+                <label class="label">Focus Duration: <strong id="pomWorkVal">25</strong> min</label>
+                <input type="range" min="10" max="60" step="5" value="25" class="budget-slider" id="pomWork" oninput="document.getElementById('pomWorkVal').textContent=this.value"/>
+              </div>
+              <div class="form-row">
+                <label class="label">Break Duration: <strong id="pomBreakVal">5</strong> min</label>
+                <input type="range" min="3" max="20" step="1" value="5" class="budget-slider" id="pomBreak" oninput="document.getElementById('pomBreakVal').textContent=this.value"/>
+              </div>
+              <div style="border-top:1px solid var(--slate-100);padding-top:14px;margin-top:4px">
+                <div class="section-head">🏅 Achievements</div>
+                <div class="grid3" id="achievementGrid" style="gap:8px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /main -->
+  </div><!-- /app -->
+</div><!-- /mainApp -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="addTaskModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addTaskModal')">✕</button>
+    <div class="modal-title">Add New Task</div>
+    <div class="form-row"><label class="label">Title *</label><input id="taskTitle" class="input" placeholder="e.g. Complete OS assignment"/></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="label">Subject</label><input id="taskSubject" class="input" placeholder="e.g. Operating Systems"/></div>
+      <div class="form-row"><label class="label">Priority</label>
+        <select id="taskPriority" class="input"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label class="label">Due Date</label><input id="taskDue" type="date" class="input"/></div>
+      <div class="form-row"><label class="label">Est. Minutes</label><input id="taskMins" type="number" class="input" value="30"/></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveTask()">Add Task</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="journalModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('journalModal')">✕</button>
+    <div class="modal-title">New Journal Entry</div>
+    <div class="form-row"><label class="label">Title (optional)</label><input id="journalTitle" class="input" placeholder="Daily Reflection"/></div>
+    <div class="form-row"><label class="label">Your thoughts</label><textarea id="journalContent" class="input textarea" rows="7" placeholder="Write freely... how was your day? What are you grateful for?"></textarea></div>
+    <button class="btn btn-primary btn-full" onclick="saveJournal()">Save Entry</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="examModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('examModal')">✕</button>
+    <div class="modal-title">Add Exam</div>
+    <div class="form-row"><label class="label">Subject *</label><input id="examSubject" class="input" placeholder="e.g. Operating Systems"/></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="label">Exam Date *</label><input id="examDate" type="date" class="input"/></div>
+      <div class="form-row"><label class="label">Difficulty</label>
+        <select id="examDifficulty" class="input"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select>
+      </div>
+    </div>
+    <div class="form-row"><label class="label">Notes (optional)</label><input id="examNotes" class="input" placeholder="Any notes..."/></div>
+    <button class="btn btn-primary btn-full" onclick="saveExam()">Add Exam</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="goalModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('goalModal')">✕</button>
+    <div class="modal-title">Add Goal</div>
+    <div class="form-row"><label class="label">Goal Title *</label><input id="goalTitle" class="input" placeholder="e.g. Complete OS syllabus"/></div>
+    <div class="form-row"><label class="label">Description (optional)</label><input id="goalDesc" class="input" placeholder="More details..."/></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="label">Category</label>
+        <select id="goalCat" class="input"><option value="academic">Academic</option><option value="career">Career</option><option value="personal">Personal</option><option value="health">Health</option><option value="financial">Financial</option></select>
+      </div>
+      <div class="form-row"><label class="label">Target Date</label><input id="goalDate" type="date" class="input"/></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveGoal()">Add Goal</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA LAYER — localStorage persistence
+// ============================================================
+const DB = {
+  get(key,def=[]){try{return JSON.parse(localStorage.getItem('bs_'+key))||def}catch{return def}},
+  set(key,val){localStorage.setItem('bs_'+key,JSON.stringify(val))},
+  getObj(key,def={}){try{return JSON.parse(localStorage.getItem('bs_'+key))||def}catch{return def}}
+};
+
+const QUOTES = [
+  {t:"The secret of getting ahead is getting started.",a:"Mark Twain"},
+  {t:"It always seems impossible until it's done.",a:"Nelson Mandela"},
+  {t:"Believe you can and you're halfway there.",a:"Theodore Roosevelt"},
+  {t:"You are braver than you believe, stronger than you seem.",a:"A.A. Milne"},
+  {t:"Success is the sum of small efforts repeated day in and day out.",a:"Robert Collier"},
+  {t:"Don't watch the clock; do what it does. Keep going.",a:"Sam Levenson"},
+  {t:"Push yourself, because no one else is going to do it for you.",a:"Unknown"},
+  {t:"Great things never come from comfort zones.",a:"Unknown"},
+  {t:"Dream it. Wish it. Do it.",a:"Unknown"},
+  {t:"The harder you work for something, the greater you'll feel when you achieve it.",a:"Unknown"},
+  {t:"Your only limit is your mind.",a:"Unknown"},
+  {t:"Small steps every day lead to massive results over time.",a:"Unknown"}
+];
+
+const EMOTIONS = ['stressed','anxious','tired','focused','motivated','happy','sad','calm','overwhelmed','grateful'];
+
+const SCHOLARSHIPS = [
+  {name:"Prime Minister's Scholarship Scheme",amount:"₹36,000/year",elig:"Defence wards, GPA ≥ 7.5",deadline:"2026-06-30",link:"https://scholarships.gov.in"},
+  {name:"National Scholarship Portal (NSP)",amount:"Up to ₹20,000/year",elig:"Merit + Income < ₹6L",deadline:"2026-09-30",link:"https://scholarships.gov.in"},
+  {name:"AICTE Pragati Scholarship",amount:"₹50,000/year",elig:"Female tech students",deadline:"2026-05-15",link:"https://aicte-india.org"},
+  {name:"INSPIRE Scholarship (DST)",amount:"₹80,000/year",elig:"Top 1% in 12th, Science stream",deadline:"2026-07-31",link:"https://online-inspire.gov.in"},
+  {name:"Tata Capital Pankh Scholarship",amount:"₹12,000–50,000",elig:"Income < ₹4L, merit based",deadline:"2026-08-01",link:"https://tatacapital.com"}
+];
+const JOBS = [
+  {title:"Content Writer",company:"Internshala",pay:"₹8,000/mo",hours:"Flexible",remote:true},
+  {title:"Graphic Design Intern",company:"Pepper Content",pay:"₹10,000/mo",hours:"Part-time",remote:true},
+  {title:"Online Tutor",company:"UrbanPro",pay:"₹300–600/hr",hours:"Weekend",remote:true},
+  {title:"Data Entry Operator",company:"Local Firms",pay:"₹7,000/mo",hours:"4hrs/day",remote:false},
+  {title:"Social Media Manager",company:"Various Startups",pay:"₹12,000/mo",hours:"Flexible",remote:true},
+  {title:"Campus Ambassador",company:"Various Ed-Techs",pay:"₹5,000–15,000/mo",hours:"Part-time",remote:false}
+];
+const TIPS = [
+  {icon:"👁️",cat:"Screen Time",tip:"Follow the 20-20-20 rule: every 20 mins, look 20 feet away for 20 seconds."},
+  {icon:"😴",cat:"Sleep",tip:"Avoid screens 1 hour before bed. Blue light disrupts melatonin production."},
+  {icon:"💧",cat:"Hydration",tip:"Drink 8 glasses of water daily. Dehydration reduces cognitive performance by 13%."},
+  {icon:"🚶",cat:"Movement",tip:"Take a 5-minute walk every hour of study. It boosts blood flow to the brain."},
+  {icon:"📵",cat:"Focus",tip:"Use airplane mode while studying. Notifications reduce focus for up to 23 minutes."},
+  {icon:"🥦",cat:"Nutrition",tip:"Eat brain foods: walnuts, blueberries, dark chocolate, and leafy greens before sessions."}
+];
+const GROUPS = [
+  {name:"Exam Warriors",members:1240,topic:"Competitive Exams",active:true},
+  {name:"Coders Hub",members:3800,topic:"Programming & DSA",active:true},
+  {name:"Mental Wellness Circle",members:890,topic:"Stress & Wellbeing",active:true},
+  {name:"Career Launchers",members:2100,topic:"Jobs & Internships",active:true},
+  {name:"Budget Students",members:560,topic:"Finance & Scholarships",active:false}
+];
+const COURSES = [
+  {id:1,icon:"💻",title:"Python for Everybody",provider:"Coursera / UMich",duration:"12 weeks",level:"Beginner",free:true,cat:"tech"},
+  {id:2,icon:"🚀",title:"Startup Launchpad",provider:"IIT Bombay (SWAYAM)",duration:"6 weeks",level:"Intermediate",free:true,cat:"entrepreneurship"},
+  {id:3,icon:"📱",title:"Digital Marketing Fundamentals",provider:"Google",duration:"4 weeks",level:"Beginner",free:true,cat:"digital"},
+  {id:4,icon:"🎨",title:"Design Thinking & Problem Solving",provider:"NPTEL",duration:"8 weeks",level:"Beginner",free:true,cat:"entrepreneurship"},
+  {id:5,icon:"📊",title:"Data Analysis with Excel",provider:"Microsoft Learn",duration:"3 weeks",level:"Beginner",free:true,cat:"digital"},
+  {id:6,icon:"🗣️",title:"Effective Communication",provider:"edX",duration:"5 weeks",level:"Beginner",free:true,cat:"soft-skills"},
+  {id:7,icon:"🤖",title:"Introduction to AI & ML",provider:"Google Developers",duration:"10 weeks",level:"Intermediate",free:true,cat:"tech"},
+  {id:8,icon:"💰",title:"Financial Literacy for Students",provider:"SEBI India",duration:"2 weeks",level:"Beginner",free:true,cat:"finance"}
+];
+const NEWS = [
+  {title:"IIT Madras launches free AI certification for students",summary:"Over 50,000 students can enroll in the new AI and ML certification program starting April 2026.",source:"The Hindu Education",date:"2026-03-10"},
+  {title:"AICTE announces new internship portal for engineering students",summary:"A centralized portal connecting 40 lakh students with verified internship opportunities nationwide.",source:"Education Times",date:"2026-03-08"},
+  {title:"UGC revises NEP 2020 credit framework for universities",summary:"New credit transfer policy allows students to study across disciplines more freely under the new framework.",source:"Mint",date:"2026-03-05"},
+  {title:"India ranked 3rd in global student startup ecosystem",summary:"Indian student startups raised over $2.1B in 2025, led by fintech and edtech sectors.",source:"Economic Times",date:"2026-03-01"}
+];
+const QUIZ_QS = [
+  {q:"Which activity excites you most?",opts:["Building things","Analyzing data","Helping people","Creating art","Leading teams"]},
+  {q:"Your ideal work environment?",opts:["Startup","Corporate","Research Lab","Freelance","Social Org"]},
+  {q:"Your strongest skill?",opts:["Problem-solving","Communication","Creativity","Organization","Technical"]},
+  {q:"Preferred work style?",opts:["Alone & focused","Team collaboration","Mix of both","With clients","Remote only"]},
+  {q:"What matters most in a career?",opts:["High salary","Impact & purpose","Work-life balance","Innovation","Stability"]}
+];
+const ROADMAPS = {
+  tech:{title:"Software Engineering",icon:"💻",steps:["Learn Python/JavaScript","Data Structures & Algorithms","Build 3 projects","Open Source contributions","Internship at tech company","Full-time SWE role"],skills:["JavaScript","React","Node.js","SQL","Git","System Design"],resources:["freeCodeCamp","LeetCode","GitHub","CS50 (Harvard)"]},
+  data:{title:"Data Science & Analytics",icon:"📊",steps:["Python & Statistics basics","Pandas, NumPy, Matplotlib","ML with scikit-learn","Kaggle competitions","Build portfolio","Data Analyst role"],skills:["Python","SQL","Tableau","Machine Learning","Excel","Statistics"],resources:["Kaggle","Google Data Analytics","Coursera","DataCamp"]},
+  design:{title:"UX/UI Design",icon:"🎨",steps:["Design principles","Figma mastery","User research methods","Build design portfolio","Freelance projects","Design role at company"],skills:["Figma","Adobe XD","User Research","Prototyping","CSS","Accessibility"],resources:["Google UX Certificate","Dribbble","Behance","UX Collective"]},
+  management:{title:"Business & Management",icon:"📋",steps:["Business fundamentals","Internship in ops/management","Leadership training","MBA or certification","Team lead role","Manager"],skills:["Leadership","Excel/Sheets","Project Management","Communication","Finance basics"],resources:["HBR","Coursera Business","LinkedIn Learning","MBA programs"]}
+};
+const SKILLS_DATA = [
+  {title:"Programming",skills:["Python","JavaScript","SQL","React"],level:70,color:"blue"},
+  {title:"Data Science",skills:["Pandas","ML basics","Visualization","Statistics"],level:45,color:"purple"},
+  {title:"Communication",skills:["Public speaking","Writing","Presentation","Networking"],level:60,color:"green"},
+  {title:"Design Thinking",skills:["UX Research","Figma","Prototyping","User Testing"],level:30,color:"pink"},
+  {title:"Leadership",skills:["Team management","Decision making","Conflict resolution"],level:55,color:"amber"},
+  {title:"Finance Literacy",skills:["Budgeting","Investment basics","Tax basics"],level:25,color:"slate"}
+];
+
+// ============================================================
+// AUTH
+// ============================================================
+let currentUser = null;
+
+function showAuth(){
+  document.getElementById('authScreen').style.display='block';
+  document.getElementById('mainApp').style.display='none';
+}
+function showMain(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  initApp();
+}
+function showLogin(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('registerScreen').style.display='none';
+}
+function showRegister(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('registerScreen').style.display='flex';
+}
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const errEl=document.getElementById('loginError');
+  errEl.style.display='none';
+  if(!email||!pass){errEl.textContent='Please fill in all fields';errEl.style.display='block';return}
+  const users=DB.get('users',[]);
+  const user=users.find(u=>u.email===email);
+  if(!user||user.password!==btoa(pass)){errEl.textContent='Invalid email or password';errEl.style.display='block';return}
+  currentUser=user;
+  DB.set('currentUser',user);
+  showMain();
+}
+function doRegister(){
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPass').value;
+  const errEl=document.getElementById('regError');
+  errEl.style.display='none';
+  if(!name||!email||!pass){errEl.textContent='Name, email and password are required';errEl.style.display='block';return}
+  if(pass.length<6){errEl.textContent='Password must be at least 6 characters';errEl.style.display='block';return}
+  const users=DB.get('users',[]);
+  if(users.find(u=>u.email===email)){errEl.textContent='Email already registered';errEl.style.display='block';return}
+  const user={id:Date.now(),name,email,password:btoa(pass),
+    college:document.getElementById('regCollege').value.trim(),
+    course:document.getElementById('regCourse').value.trim(),
+    year:document.getElementById('regYear').value,
+    bio:'',studyStreak:0,totalStudyMinutes:0,xp:0,lastStudyDate:null,
+    preferences:{pomodoroWork:25,pomodoroBreak:5}};
+  users.push(user);
+  DB.set('users',users);
+  currentUser=user;
+  DB.set('currentUser',user);
+  showMain();
+}
+function logout(){currentUser=null;DB.set('currentUser',null);showAuth();showLogin()}
+function saveUserData(){
+  const users=DB.get('users',[]);
+  const idx=users.findIndex(u=>u.id===currentUser.id);
+  if(idx>-1){users[idx]=currentUser;DB.set('users',users)}
+  DB.set('currentUser',currentUser);
+}
+
+// ============================================================
+// APP INIT
+// ============================================================
+function initApp(){
+  updateTopbar();
+  updateSidebar();
+  navigate('dashboard');
+  renderQuote();
+  renderTaskList();
+  renderDashTasks();
+  renderJournals();
+  renderExams();
+  renderGoals();
+  renderScholarships();
+  renderJobs();
+  renderTips();
+  renderGroups();
+  renderCourses('all');
+  renderNews();
+  renderInternships();
+  renderSkillMap();
+  renderCareerQuiz();
+  renderProfile();
+  buildBudgetSliders();
+  updateBudget();
+  setupNavListeners();
+}
+
+function setupNavListeners(){
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.addEventListener('click',()=>{
+      navigate(el.dataset.page);
+      closeSidebar();
+    });
+  });
+}
+
+function navigate(page){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const navEl=document.querySelector(`.nav-item[data-page="${page}"]`);
+  if(navEl)navEl.classList.add('active');
+  const pageEl=document.getElementById('page-'+page);
+  if(pageEl)pageEl.classList.add('active');
+  if(page==='profile')loadProfileForm();
+  if(page==='mental'){renderMentalQuote();renderMoodChart()}
+  if(page==='dashboard'){renderDashStats();renderWeeklyChart();renderDashTasks()}
+  window.scrollTo&&document.querySelector('.content')&&(document.querySelector('.content').scrollTop=0);
+}
+
+function updateTopbar(){
+  const h=new Date().getHours();
+  const greeting=h<12?'morning':h<17?'afternoon':'evening';
+  document.getElementById('topGreeting').textContent=`Good ${greeting}, ${currentUser.name.split(' ')[0]}! 👋`;
+  document.getElementById('topDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('streakPill').textContent=currentUser.studyStreak||0;
+  document.getElementById('xpPill').textContent=currentUser.xp||0;
+}
+function updateSidebar(){
+  document.getElementById('sidebarAvatar').textContent=currentUser.name[0].toUpperCase();
+  document.getElementById('sidebarName').textContent=currentUser.name;
+  document.getElementById('sidebarCollege').textContent=currentUser.college||'Add your college';
+}
+
+// ============================================================
+// NAVIGATION HELPERS
+// ============================================================
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').style.display=
+    document.getElementById('sidebar').classList.contains('open')?'block':'none';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').style.display='none';
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(type==='error'?' error':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function openAddTask(){openModal('addTaskModal')}
+function openJournalModal(){openModal('journalModal')}
+function openExamModal(){openModal('examModal')}
+function openGoalModal(){openModal('goalModal')}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashStats(){
+  const sessions=DB.get('sessions',[]);
+  const tasks=DB.get('tasks',[]);
+  const totalMin=sessions.reduce((s,se)=>s+se.duration,0);
+  const done=tasks.filter(t=>t.status==='done').length;
+  const h=Math.floor(totalMin/60),m=totalMin%60;
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card card-lift"><div><div class="stat-label">Study Streak</div><div class="stat-value">${currentUser.studyStreak||0}</div><div class="stat-sub">days 🔥</div></div><div class="stat-icon-wrap" style="background:var(--amber-50)">🔥</div></div>
+    <div class="stat-card card-lift"><div><div class="stat-label">Total Study</div><div class="stat-value">${h}h ${m}m</div><div class="stat-sub">All time ⏱️</div></div><div class="stat-icon-wrap" style="background:var(--blue-50)">⏱️</div></div>
+    <div class="stat-card card-lift"><div><div class="stat-label">Tasks Done</div><div class="stat-value">${done}</div><div class="stat-sub">Completed ✅</div></div><div class="stat-icon-wrap" style="background:var(--green-50)">✅</div></div>
+    <div class="stat-card card-lift"><div><div class="stat-label">XP Points</div><div class="stat-value">${currentUser.xp||0}</div><div class="stat-sub">Keep going ⚡</div></div><div class="stat-icon-wrap" style="background:var(--purple-50)">⚡</div></div>
+  `;
+  document.getElementById('bannerTitle').textContent=`Welcome back, ${currentUser.name.split(' ')[0]}! 🎯`;
+  document.getElementById('bannerSub').textContent=(currentUser.course?currentUser.course+' · ':'')+( currentUser.college||'Your productivity hub');
+}
+
+let weeklyChartInst=null;
+function renderWeeklyChart(){
+  const sessions=DB.get('sessions',[]);
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const now=new Date();
+  const data=days.map((_,i)=>{
+    const d=new Date(now);
+    d.setDate(now.getDate()-now.getDay()+i+1);
+    const ds=d.toDateString();
+    return sessions.filter(s=>new Date(s.date).toDateString()===ds).reduce((a,s)=>a+s.duration,0);
+  });
+  const ctx=document.getElementById('weeklyChart');
+  if(!ctx)return;
+  if(weeklyChartInst)weeklyChartInst.destroy();
+  weeklyChartInst=new Chart(ctx,{
+    type:'bar',
+    data:{labels:days,datasets:[{data,backgroundColor:'rgba(37,99,235,0.8)',borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw} min`}}},scales:{y:{display:false},x:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+}
+
+function renderDashTasks(){
+  const tasks=DB.get('tasks',[]).filter(t=>t.status!=='done').slice(0,4);
+  const el=document.getElementById('dashTasks');
+  if(!el)return;
+  if(!tasks.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--slate-400)"><div style="font-size:28px;margin-bottom:6px">📋</div><div style="font-size:13px">No pending tasks!</div><button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="openAddTask()">Add Task</button></div>';return}
+  const pColor={urgent:'badge-red',high:'badge-orange',medium:'badge-blue',low:'badge-slate'};
+  el.innerHTML=tasks.map(t=>`
+    <div class="task-item">
+      <div class="task-check" onclick="toggleTaskStatus('${t.id}')"></div>
+      <span class="task-title">${t.title}</span>
+      ${t.subject?`<span style="font-size:11px;color:var(--slate-400)">${t.subject}</span>`:''}
+      <span class="badge ${pColor[t.priority]||'badge-blue'}">${t.priority}</span>
+    </div>`).join('');
+}
+
+function renderQuote(){
+  const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  const qt=document.getElementById('quoteText');
+  const qa=document.getElementById('quoteAuthor');
+  if(qt)qt.textContent=`"${q.t}"`;
+  if(qa)qa.textContent=`— ${q.a}`;
+}
+
+// ============================================================
+// POMODORO TIMER
+// ============================================================
+let timerSecs=25*60,timerTotal=25*60,timerRunning=false,timerInterval=null,timerMode='work',cycles=0;
+
+function setTimerMode(mode,mins){
+  resetTimer();
+  timerMode=mode;timerTotal=mins*60;timerSecs=mins*60;
+  ['Work','Break','Long'].forEach(m=>document.getElementById('mode'+m).classList.remove('active'));
+  const map={work:'Work',break:'Break',long:'Long'};
+  document.getElementById('mode'+map[mode]).classList.add('active');
+  const labels={work:'Focus Time',break:'Short Break',long:'Long Break'};
+  document.getElementById('timerLabel').textContent=labels[mode];
+  const colors={work:'var(--blue-600)',break:'var(--green-600)',long:'var(--amber-500)'};
+  document.getElementById('timerRing').setAttribute('stroke',colors[mode]);
+  updateTimerDisplay();
+}
+
+function toggleTimer(){
+  timerRunning=!timerRunning;
+  document.getElementById('timerStartBtn').textContent=timerRunning?'⏸ Pause':'▶ Start';
+  if(timerRunning){
+    timerInterval=setInterval(()=>{
+      timerSecs--;
+      updateTimerDisplay();
+      if(timerSecs<=0){
+        clearInterval(timerInterval);timerRunning=false;
+        document.getElementById('timerStartBtn').textContent='▶ Start';
+        if(timerMode==='work'){
+          cycles++;
+          document.getElementById('cycleCount').textContent=cycles;
+          const mins=timerTotal/60;
+          logStudySession(mins);
+        }
+        timerSecs=timerTotal;
+        updateTimerDisplay();
+        showToast(timerMode==='work'?`🍅 Focus session done! +${Math.floor(timerTotal/60/5)} XP earned`:'☕ Break over! Back to work!');
+      }
+    },1000);
+  }else{clearInterval(timerInterval)}
+}
+
+function resetTimer(){
+  clearInterval(timerInterval);timerRunning=false;timerSecs=timerTotal;
+  document.getElementById('timerStartBtn').textContent='▶ Start';
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  const m=String(Math.floor(timerSecs/60)).padStart(2,'0');
+  const s=String(timerSecs%60).padStart(2,'0');
+  document.getElementById('timerDisplay').textContent=`${m}:${s}`;
+  const circ=2*Math.PI*65;
+  const offset=circ*(1-timerSecs/timerTotal);
+  document.getElementById('timerRing').setAttribute('stroke-dasharray',circ.toFixed(2));
+  document.getElementById('timerRing').setAttribute('stroke-dashoffset',offset.toFixed(2));
+}
+
+function logStudySession(mins){
+  const sessions=DB.get('sessions',[]);
+  const subj=document.getElementById('timerSubject').value||'General';
+  sessions.push({id:Date.now(),duration:mins,subject:subj,date:new Date().toISOString()});
+  DB.set('sessions',sessions);
+  // Update streak
+  const today=new Date().toDateString();
+  const last=currentUser.lastStudyDate?new Date(currentUser.lastStudyDate).toDateString():null;
+  const yest=new Date();yest.setDate(yest.getDate()-1);
+  if(last===today){}
+  else if(last===yest.toDateString())currentUser.studyStreak=(currentUser.studyStreak||0)+1;
+  else currentUser.studyStreak=1;
+  currentUser.lastStudyDate=new Date().toISOString();
+  currentUser.totalStudyMinutes=(currentUser.totalStudyMinutes||0)+mins;
+  currentUser.xp=(currentUser.xp||0)+Math.floor(mins/5);
+  saveUserData();
+  updateTopbar();
+}
+
+// ============================================================
+// TASKS
+// ============================================================
+let taskFilter='all';
+
+function saveTask(){
+  const title=document.getElementById('taskTitle').value.trim();
+  if(!title){showToast('Task title is required','error');return}
+  const tasks=DB.get('tasks',[]);
+  tasks.unshift({id:Date.now().toString(),title,subject:document.getElementById('taskSubject').value.trim(),
+    priority:document.getElementById('taskPriority').value,status:'todo',
+    dueDate:document.getElementById('taskDue').value,estimatedMinutes:parseInt(document.getElementById('taskMins').value)||30,
+    createdAt:new Date().toISOString()});
+  DB.set('tasks',tasks);
+  closeModal('addTaskModal');
+  document.getElementById('taskTitle').value='';document.getElementById('taskSubject').value='';
+  document.getElementById('taskDue').value='';
+  renderTaskList();renderDashTasks();
+  showToast('✅ Task added!');
+}
+
+function filterTasks(f,btn){
+  taskFilter=f;
+  document.querySelectorAll('#page-study .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTaskList();
+}
+
+function renderTaskList(){
+  const tasks=DB.get('tasks',[]);
+  const filtered=taskFilter==='all'?tasks:tasks.filter(t=>t.status===taskFilter);
+  const el=document.getElementById('taskList');
+  if(!el)return;
+  if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:24px;color:var(--slate-400)"><div style="font-size:28px;margin-bottom:6px">🎉</div><div style="font-size:13px">${taskFilter==='done'?'No completed tasks yet':'No tasks here!'}</div></div>`;return}
+  const pColor={urgent:'badge-red',high:'badge-orange',medium:'badge-blue',low:'badge-slate'};
+  el.innerHTML=filtered.map(t=>`
+    <div class="task-item" style="${t.status==='done'?'opacity:.6':''}">
+      <div class="task-check ${t.status==='done'?'done':''}" onclick="toggleTaskStatus('${t.id}')">${t.status==='done'?'✓':''}</div>
+      <span class="task-title ${t.status==='done'?'done':''}">${t.title}${t.subject?`<br><span style="font-size:11px;color:var(--slate-400);font-weight:400">${t.subject}</span>`:''}</span>
+      <span class="badge ${pColor[t.priority]||'badge-blue'}">${t.priority}</span>
+      ${t.dueDate?`<span style="font-size:10px;color:var(--slate-400)">${new Date(t.dueDate).toLocaleDateString('en-IN')}</span>`:''}
+      <button class="task-del" onclick="deleteTask('${t.id}')">✕</button>
+    </div>`).join('');
+}
+
+function toggleTaskStatus(id){
+  const tasks=DB.get('tasks',[]);
+  const t=tasks.find(x=>x.id===id);
+  if(!t)return;
+  t.status=t.status==='done'?'todo':'done';
+  if(t.status==='done'){t.completedAt=new Date().toISOString();currentUser.xp=(currentUser.xp||0)+5;saveUserData();updateTopbar()}
+  DB.set('tasks',tasks);renderTaskList();renderDashTasks();
+}
+function deleteTask(id){
+  DB.set('tasks',DB.get('tasks',[]).filter(t=>t.id!==id));
+  renderTaskList();renderDashTasks();showToast('Task deleted');
+}
+
+// ============================================================
+// MOOD TRACKER
+// ============================================================
+let selectedMood=0,selectedEmotions=[];
+
+function renderEmotionGrid(){
+  document.getElementById('emotionGrid').innerHTML=EMOTIONS.map(e=>
+    `<button class="emotion-tag ${selectedEmotions.includes(e)?'selected':''}" onclick="toggleEmotion('${e}')">${e}</button>`
+  ).join('');
+}
+renderEmotionGrid();
+
+function selectMood(v){
+  selectedMood=v;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelector(`.mood-btn[data-mood="${v}"]`).classList.add('selected');
+}
+function toggleEmotion(e){
+  selectedEmotions=selectedEmotions.includes(e)?selectedEmotions.filter(x=>x!==e):[...selectedEmotions,e];
+  renderEmotionGrid();
+}
+function logMood(){
+  if(!selectedMood){showToast('Please select a mood first','error');return}
+  const moods=DB.get('moods',[]);
+  moods.push({id:Date.now(),mood:selectedMood,emotions:[...selectedEmotions],note:document.getElementById('moodNote').value,date:new Date().toISOString()});
+  DB.set('moods',moods);
+  selectedMood=0;selectedEmotions=[];
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  renderEmotionGrid();
+  document.getElementById('moodNote').value='';
+  renderMoodChart();
+  showToast('😊 Mood logged! Keep checking in daily.');
+}
+
+let moodChartInst=null;
+function renderMoodChart(){
+  const moods=DB.get('moods',[]).slice(-7);
+  const labels=moods.map(m=>new Date(m.date).toLocaleDateString('en-IN',{month:'short',day:'numeric'}));
+  const data=moods.map(m=>m.mood);
+  const avg=data.length?(data.reduce((a,b)=>a+b,0)/data.length).toFixed(1):0;
+  const el=document.getElementById('avgMoodLabel');
+  if(el)el.textContent=avg>0?`Avg: ${avg}/5`:'';
+  const ctx=document.getElementById('moodChart');
+  if(!ctx)return;
+  if(moodChartInst)moodChartInst.destroy();
+  moodChartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels:labels.length?labels:['No data'],datasets:[{data:data.length?data:[null],borderColor:'var(--green-600)',backgroundColor:'rgba(22,163,74,.1)',tension:.4,fill:true,pointBackgroundColor:'var(--green-600)',pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:1,max:5,display:false},x:{grid:{display:false},ticks:{font:{size:9}}}}}
+  });
+}
+
+// ============================================================
+// BREATHING
+// ============================================================
+let breathingActive=false,breathInterval=null,breathCycles=0,breathPhase=0;
+const breathPhases=[
+  {label:'Breathe in...',dur:4,scale:'scale(1.3)',bg:['#dbeafe','#bfdbfe','#60a5fa']},
+  {label:'Hold...',dur:4,scale:'scale(1.3)',bg:['#fef3c7','#fde68a','#f59e0b']},
+  {label:'Breathe out...',dur:4,scale:'scale(0.85)',bg:['#dcfce7','#bbf7d0','#4ade80']}
+];
+
+function toggleBreathing(){
+  breathingActive=!breathingActive;
+  const btn=document.getElementById('breathBtn');
+  if(breathingActive){
+    btn.textContent='⏹ Stop';
+    runBreath();
+  }else{
+    btn.textContent='▶ Start Breathing';
+    clearTimeout(breathInterval);
+    resetBreath();
+  }
+}
+function resetBreath(){
+  document.getElementById('breathOuter').style.transform='';
+  document.getElementById('breathOuter').style.background='var(--blue-100)';
+  document.getElementById('breathInner').style.background='var(--blue-200)';
+  document.getElementById('breathCore').style.background='var(--blue-400)';
+  document.getElementById('breathCore').textContent='🌊';
+  document.getElementById('breathLabel').textContent='Press start — 4-4-4 box breathing';
+  document.getElementById('breathCount').textContent='';
+}
+function runBreath(){
+  if(!breathingActive)return;
+  const phase=breathPhases[breathPhase%3];
+  document.getElementById('breathLabel').textContent=phase.label;
+  document.getElementById('breathOuter').style.transform=phase.scale;
+  document.getElementById('breathOuter').style.background=phase.bg[0];
+  document.getElementById('breathInner').style.background=phase.bg[1];
+  document.getElementById('breathCore').style.background=phase.bg[2];
+  let count=phase.dur;
+  document.getElementById('breathCount').textContent=count;
+  const cInterval=setInterval(()=>{count--;document.getElementById('breathCount').textContent=count>0?count:'';},1000);
+  breathInterval=setTimeout(()=>{
+    clearInterval(cInterval);
+    if(breathPhase%3===2){breathCycles++;document.getElementById('breathCycles').textContent=breathCycles}
+    breathPhase++;
+    runBreath();
+  },phase.dur*1000);
+}
+function renderMentalQuote(){
+  const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  const el=document.getElementById('mentalQuote');
+  const ae=document.getElementById('mentalQuoteAuthor');
+  if(el)el.textContent=`"${q.t}"`;
+  if(ae)ae.textContent=`— ${q.a}`;
+}
+function newQuote(){renderMentalQuote()}
+
+// ============================================================
+// JOURNAL
+// ============================================================
+function saveJournal(){
+  const content=document.getElementById('journalContent').value.trim();
+  if(!content){showToast('Please write something first','error');return}
+  const journals=DB.get('journals',[]);
+  journals.unshift({id:Date.now(),title:document.getElementById('journalTitle').value.trim()||'Daily Reflection',content,date:new Date().toISOString()});
+  DB.set('journals',journals);
+  closeModal('journalModal');
+  document.getElementById('journalTitle').value='';document.getElementById('journalContent').value='';
+  renderJournals();showToast('📓 Journal entry saved!');
+}
+function deleteJournal(id){
+  DB.set('journals',DB.get('journals',[]).filter(j=>j.id!==id));
+  renderJournals();
+}
+function renderJournals(){
+  const el=document.getElementById('journalList');
+  if(!el)return;
+  const journals=DB.get('journals',[]);
+  if(!journals.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--slate-400)"><div style="font-size:28px;margin-bottom:6px">📖</div><div style="font-size:13px">Start your journaling journey today</div></div>';return}
+  el.innerHTML=journals.slice(0,5).map(j=>`
+    <div class="journal-card">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div style="flex:1">
+          <div class="journal-date">${new Date(j.date).toLocaleDateString('en-IN',{weekday:'short',year:'numeric',month:'short',day:'numeric'})}</div>
+          <div class="journal-title">${j.title}</div>
+          <div class="journal-preview">${j.content.length>120?j.content.slice(0,120)+'...':j.content}</div>
+        </div>
+        <button onclick="deleteJournal(${j.id})" style="background:none;border:none;color:var(--slate-300);cursor:pointer;font-size:16px;padding:0 0 0 8px" onmouseover="this.style.color='var(--red-500)'" onmouseout="this.style.color='var(--slate-300)'">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ============================================================
+// CAREER QUIZ
+// ============================================================
+let quizAnswers={},quizStep=0,quizDone=false;
+
+function renderCareerQuiz(){
+  const el=document.getElementById('quizArea');
+  if(!el)return;
+  if(quizDone&&quizAnswers.result){renderQuizResult();return}
+  if(quizStep===0&&!quizDone){
+    el.innerHTML=`
+      <div class="card" style="text-align:center">
+        <div style="width:72px;height:72px;background:var(--blue-100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px">🎯</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--slate-800);margin-bottom:8px">Career Aptitude Quiz</div>
+        <div style="font-size:13px;color:var(--slate-500);margin-bottom:20px;max-width:340px;margin-left:auto;margin-right:auto">Answer 5 quick questions to get a personalized career roadmap matched to your interests.</div>
+        <div style="display:flex;justify-content:center;gap:12px;margin-bottom:24px">
+          <div class="badge badge-blue" style="font-size:12px;padding:6px 14px">5 Questions</div>
+          <div class="badge badge-green" style="font-size:12px;padding:6px 14px">2 Minutes</div>
+          <div class="badge badge-amber" style="font-size:12px;padding:6px 14px">Free Report</div>
+        </div>
+        <button class="btn btn-primary" style="padding:10px 28px;font-size:14px" onclick="startQuiz()">Start Quiz →</button>
+      </div>`;
+    return;
+  }
+  const q=QUIZ_QS[quizStep];
+  el.innerHTML=`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:12px;color:var(--slate-500);font-weight:600">Question ${quizStep+1} of ${QUIZ_QS.length}</div>
+        <div style="display:flex;gap:4px">${QUIZ_QS.map((_,i)=>`<div style="width:28px;height:4px;border-radius:2px;background:${i<=quizStep?'var(--blue-600)':'var(--slate-200)'}"></div>`).join('')}</div>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--slate-800);margin-bottom:16px">${q.q}</div>
+      ${q.opts.map(o=>`<button class="quiz-option ${quizAnswers[quizStep]===o?'selected':''}" onclick="selectQuizAnswer('${o}')">${o}</button>`).join('')}
+      <div style="display:flex;justify-content:space-between;margin-top:12px">
+        <button class="btn btn-ghost" onclick="quizBack()" ${quizStep===0?'disabled':''}>← Back</button>
+        ${quizStep<QUIZ_QS.length-1
+          ?`<button class="btn btn-primary" onclick="quizNext()" ${!quizAnswers[quizStep]?'disabled':''}>Next →</button>`
+          :`<button class="btn btn-success" onclick="submitQuiz()" ${Object.keys(quizAnswers).length<QUIZ_QS.length?'disabled':''}>Get My Results 🎯</button>`}
+      </div>
+    </div>`;
+}
+function startQuiz(){quizStep=1;quizAnswers={};renderCareerQuiz()}
+function selectQuizAnswer(o){quizAnswers[quizStep]=o;renderCareerQuiz()}
+function quizNext(){if(quizAnswers[quizStep])quizStep++;renderCareerQuiz()}
+function quizBack(){if(quizStep>1)quizStep--;renderCareerQuiz()}
+function submitQuiz(){
+  const answers=Object.values(quizAnswers);
+  const scores={tech:0,data:0,design:0,management:0};
+  answers.forEach(a=>{
+    if(['Building things','Technical','Problem-solving','Startup','High salary'].includes(a))scores.tech++;
+    if(['Analyzing data','Research Lab','Problem-solving','Technical'].includes(a))scores.data++;
+    if(['Creating art','Creativity','Freelance','Innovation'].includes(a))scores.design++;
+    if(['Leading teams','Corporate','Communication','Team collaboration','Impact & purpose'].includes(a))scores.management++;
+  });
+  const top=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  quizAnswers.result=top;quizDone=true;
+  renderQuizResult();
+}
+function renderQuizResult(){
+  const path=quizAnswers.result;
+  const rm=ROADMAPS[path];
+  const colors={tech:'var(--blue-700)',data:'#7c3aed',design:'#db2777',management:'var(--amber-600)'};
+  const el=document.getElementById('quizArea');
+  el.innerHTML=`
+    <div style="background:${colors[path]};border-radius:var(--radius-lg);padding:20px;color:#fff;margin-bottom:14px">
+      <div style="font-size:12px;opacity:.75;margin-bottom:4px">Your recommended career path</div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px">${rm.icon} ${rm.title}</div>
+      <div style="font-size:13px;opacity:.85">Based on your answers, this path aligns best with your interests and strengths.</div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-head">📍 Your Career Roadmap</div>
+      ${rm.steps.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:28px;height:28px;border-radius:50%;background:var(--blue-100);color:var(--blue-700);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</div><div style="font-size:13px;color:var(--slate-700);font-weight:500">${s}</div></div>`).join('')}
+    </div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="card"><div class="section-head">🛠 Key Skills</div><div style="display:flex;flex-wrap:wrap;gap:6px">${rm.skills.map(s=>`<span class="badge badge-blue">${s}</span>`).join('')}</div></div>
+      <div class="card"><div class="section-head">📚 Resources</div>${rm.resources.map(r=>`<div style="font-size:13px;color:var(--slate-600);margin-bottom:5px">• ${r}</div>`).join('')}</div>
+    </div>
+    <button class="btn btn-secondary btn-full" onclick="retakeQuiz()">↺ Retake Quiz</button>`;
+}
+function retakeQuiz(){quizDone=false;quizStep=0;quizAnswers={};renderCareerQuiz()}
+
+function careerTab(t,btn){
+  document.querySelectorAll('#page-career .tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#page-career .tab-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('career-'+t).classList.add('active');
+}
+
+function renderInternships(){
+  const el=document.getElementById('internshipGrid');
+  if(!el)return;
+  const data=[
+    {company:"TCS Digital",role:"Software Intern",stipend:"₹15,000/mo",location:"Chennai",deadline:"2026-04-15",type:"tech"},
+    {company:"Infosys Springboard",role:"Data Analyst Intern",stipend:"₹12,000/mo",location:"Bangalore",deadline:"2026-04-30",type:"data"},
+    {company:"Zoho Corp",role:"UI/UX Intern",stipend:"₹10,000/mo",location:"Chennai",deadline:"2026-05-01",type:"design"},
+    {company:"Freshworks",role:"Product Intern",stipend:"₹20,000/mo",location:"Chennai",deadline:"2026-04-20",type:"management"},
+    {company:"ISRO",role:"Research Intern",stipend:"₹8,000/mo",location:"Bangalore",deadline:"2026-05-15",type:"tech"}
+  ];
+  el.innerHTML=data.map(j=>`
+    <div class="card card-lift">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">
+        <div><div style="font-size:15px;font-weight:700;color:var(--slate-800)">${j.role}</div><div style="font-size:12px;color:var(--slate-500)">${j.company}</div></div>
+        <span class="badge badge-blue">${j.type}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--slate-600);margin-bottom:12px">
+        <span>💰 ${j.stipend}</span><span>📍 ${j.location}</span>
+        <span style="grid-column:span 2">📅 Apply by ${new Date(j.deadline).toLocaleDateString('en-IN')}</span>
+      </div>
+      <button class="btn btn-primary btn-full btn-sm">Apply Now →</button>
+    </div>`).join('');
+}
+
+function renderSkillMap(){
+  const el=document.getElementById('skillGrid');
+  if(!el)return;
+  const cmap={blue:'badge-blue',purple:'badge-purple',green:'badge-green',pink:'badge-red',amber:'badge-amber',slate:'badge-slate'};
+  const bars={blue:'var(--blue-600)',purple:'#9333ea',green:'var(--green-600)',pink:'#ec4899',amber:'var(--amber-500)',slate:'var(--slate-400)'};
+  el.innerHTML=SKILLS_DATA.map(s=>`
+    <div class="skill-card">
+      <div class="skill-header">
+        <div style="font-size:14px;font-weight:700;color:var(--slate-800)">${s.title}</div>
+        <span class="badge ${cmap[s.color]}">${s.level}%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${s.level}%;background:${bars[s.color]}"></div></div>
+      <div class="skill-tags">${s.skills.map(sk=>`<span class="skill-tag">${sk}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// ACADEMIC
+// ============================================================
+function saveExam(){
+  const subj=document.getElementById('examSubject').value.trim();
+  const date=document.getElementById('examDate').value;
+  if(!subj||!date){showToast('Subject and date are required','error');return}
+  const exams=DB.get('exams',[]);
+  exams.push({id:Date.now(),subject:subj,examDate:date,difficulty:document.getElementById('examDifficulty').value,notes:document.getElementById('examNotes').value.trim()});
+  DB.set('exams',exams);
+  closeModal('examModal');
+  document.getElementById('examSubject').value='';document.getElementById('examDate').value='';document.getElementById('examNotes').value='';
+  renderExams();showToast('📅 Exam added!');
+}
+function deleteExam(id){DB.set('exams',DB.get('exams',[]).filter(e=>e.id!==id));renderExams()}
+function renderExams(){
+  const el=document.getElementById('examList');
+  if(!el)return;
+  const exams=DB.get('exams',[]).sort((a,b)=>new Date(a.examDate)-new Date(b.examDate));
+  if(!exams.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--slate-400)"><div style="font-size:28px">📅</div><div style="font-size:13px;margin-top:6px">No exams added yet</div></div>';return}
+  el.innerHTML=exams.map(e=>{
+    const days=Math.ceil((new Date(e.examDate)-new Date())/(1000*60*60*24));
+    const cls=days<=2?'exam-red':days<=7?'exam-amber':days<=14?'exam-blue':'exam-green';
+    const tc=days<=2?'var(--red-600)':days<=7?'var(--amber-600)':days<=14?'var(--blue-700)':'var(--green-700)';
+    return `<div class="exam-card ${cls}">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:${tc}">${e.subject}</div>
+        <div style="font-size:11px;color:${tc};opacity:.7">${new Date(e.examDate).toLocaleDateString('en-IN',{weekday:'short',year:'numeric',month:'short',day:'numeric'})}</div>
+        ${e.notes?`<div style="font-size:11px;color:var(--slate-500);margin-top:3px">${e.notes}</div>`:''}
+      </div>
+      <div style="text-align:right">
+        <div class="exam-days-big" style="color:${tc}">${days>0?days:0}</div>
+        <div style="font-size:10px;color:${tc};opacity:.7">${days===1?'day':'days'} left</div>
+        <button onclick="deleteExam(${e.id})" style="background:none;border:none;font-size:12px;color:${tc};opacity:.5;cursor:pointer;margin-top:4px">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveGoal(){
+  const title=document.getElementById('goalTitle').value.trim();
+  if(!title){showToast('Goal title is required','error');return}
+  const goals=DB.get('goals',[]);
+  goals.unshift({id:Date.now(),title,description:document.getElementById('goalDesc').value.trim(),category:document.getElementById('goalCat').value,targetDate:document.getElementById('goalDate').value,progress:0});
+  DB.set('goals',goals);
+  closeModal('goalModal');
+  document.getElementById('goalTitle').value='';document.getElementById('goalDesc').value='';document.getElementById('goalDate').value='';
+  renderGoals();showToast('🎯 Goal added!');
+}
+function updateGoalProgress(id,p){
+  const goals=DB.get('goals',[]);
+  const g=goals.find(x=>x.id===id);
+  if(g){g.progress=p;DB.set('goals',goals);renderGoals()}
+}
+function deleteGoal(id){DB.set('goals',DB.get('goals',[]).filter(g=>g.id!==id));renderGoals()}
+function renderGoals(){
+  const el=document.getElementById('goalList');
+  if(!el)return;
+  const goals=DB.get('goals',[]);
+  if(!goals.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--slate-400)"><div style="font-size:28px">🎯</div><div style="font-size:13px;margin-top:6px">Set your first goal!</div></div>';return}
+  const cmap={academic:'badge-blue',career:'badge-purple',personal:'badge-green',health:'badge-red',financial:'badge-amber'};
+  const bars={0:'var(--red-400)',25:'var(--orange-600)',50:'var(--amber-500)',75:'var(--blue-600)',100:'var(--green-600)'};
+  el.innerHTML=goals.map(g=>{
+    const barColor=g.progress>=100?bars[100]:g.progress>=75?bars[75]:g.progress>=50?bars[50]:g.progress>=25?bars[25]:bars[0];
+    return `<div class="goal-card">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--slate-800)">${g.title}</div>${g.description?`<div style="font-size:11px;color:var(--slate-400)">${g.description}</div>`:''}</div>
+        <div style="display:flex;gap:4px;align-items:center">
+          <span class="badge ${cmap[g.category]||'badge-slate'}">${g.category}</span>
+          <button onclick="deleteGoal(${g.id})" style="background:none;border:none;color:var(--slate-300);cursor:pointer;font-size:14px" onmouseover="this.style.color='var(--red-500)'" onmouseout="this.style.color='var(--slate-300)'">✕</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="progress-track" style="flex:1"><div class="progress-fill" style="width:${g.progress}%;background:${barColor}"></div></div>
+        <span style="font-size:12px;font-weight:700;color:var(--slate-600)">${g.progress}%</span>
+      </div>
+      <div class="goal-prog-btns">${[0,25,50,75,100].map(v=>`<button class="prog-btn ${g.progress===v?'active':''}" onclick="updateGoalProgress(${g.id},${v})">${v}%</button>`).join('')}</div>
+      ${g.targetDate?`<div style="font-size:11px;color:var(--slate-400);margin-top:6px">🎯 Target: ${new Date(g.targetDate).toLocaleDateString('en-IN')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// FINANCE
+// ============================================================
+const budgetCats={food:1500,transport:500,books:300,entertainment:500,other:500};
+let budgetVals={...budgetCats};
+
+function buildBudgetSliders(){
+  const el=document.getElementById('budgetSliders');
+  if(!el)return;
+  el.innerHTML=Object.entries(budgetCats).map(([k,def])=>`
+    <div class="form-row">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <label class="label" style="margin-bottom:0;text-transform:capitalize">${k}</label>
+        <span style="font-size:12px;font-weight:700;color:var(--blue-600)" id="bv_${k}">₹${budgetVals[k]}</span>
+      </div>
+      <input type="range" min="0" max="5000" step="100" value="${budgetVals[k]}" class="budget-slider" oninput="budgetVals['${k}']=parseInt(this.value);document.getElementById('bv_${k}').textContent='₹'+this.value;updateBudget()"/>
+    </div>`).join('');
+}
+
+function updateBudget(){
+  const income=parseInt(document.getElementById('incomeInput')?document.getElementById('incomeInput').value:5000)||5000;
+  const total=Object.values(budgetVals).reduce((a,b)=>a+b,0);
+  const savings=income-total;
+  const el=document.getElementById('budgetSummary');
+  if(!el)return;
+  el.innerHTML=`
+    <div style="background:var(--green-50);border-radius:var(--radius-md);padding:12px;display:flex;justify-content:space-between;margin-bottom:8px">
+      <span style="font-weight:700;color:var(--green-700)">Income</span><span style="font-weight:800;color:var(--green-700)">₹${income.toLocaleString()}</span>
+    </div>
+    <div style="background:var(--red-50);border-radius:var(--radius-md);padding:12px;display:flex;justify-content:space-between;margin-bottom:8px">
+      <span style="font-weight:700;color:var(--red-600)">Total Expenses</span><span style="font-weight:800;color:var(--red-600)">₹${total.toLocaleString()}</span>
+    </div>
+    <div style="background:${savings>=0?'var(--blue-50)':'var(--amber-50)'};border-radius:var(--radius-md);padding:12px;display:flex;justify-content:space-between;margin-bottom:16px">
+      <span style="font-weight:700;color:${savings>=0?'var(--blue-700)':'var(--amber-600)'}">${savings>=0?'💰 Savings':'⚠️ Deficit'}</span>
+      <span style="font-weight:800;color:${savings>=0?'var(--blue-700)':'var(--amber-600)'}">₹${Math.abs(savings).toLocaleString()}</span>
+    </div>
+    ${Object.entries(budgetVals).map(([k,v])=>`
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+          <span style="color:var(--slate-500);text-transform:capitalize">${k}</span>
+          <span style="color:var(--slate-600);font-weight:600">${income>0?Math.round((v/income)*100):0}%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${income>0?Math.min((v/income)*100,100):0}%;background:var(--blue-400)"></div></div>
+      </div>`).join('')}`;
+}
+
+function financeTab(t,btn){
+  document.querySelectorAll('#page-finance .tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#page-finance .tab-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('finance-'+t).classList.add('active');
+}
+
+function renderScholarships(){
+  const el=document.getElementById('schList');
+  if(!el)return;
+  el.innerHTML=SCHOLARSHIPS.map(s=>`
+    <div class="sch-card">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px">
+        <div class="sch-name">${s.name}</div>
+        <span class="badge badge-green">${s.amount}</span>
+      </div>
+      <div class="sch-elig">${s.elig}</div>
+      <div class="sch-footer">
+        <span style="font-size:12px;font-weight:600;color:var(--red-500)">📅 Deadline: ${new Date(s.deadline).toLocaleDateString('en-IN')}</span>
+        <a href="${s.link}" target="_blank" class="btn btn-primary btn-sm">Apply →</a>
+      </div>
+    </div>`).join('');
+}
+function renderJobs(){
+  const el=document.getElementById('jobGrid');
+  if(!el)return;
+  el.innerHTML=JOBS.map(j=>`
+    <div class="card card-lift">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+        <div><div style="font-size:14px;font-weight:700;color:var(--slate-800)">${j.title}</div><div style="font-size:12px;color:var(--slate-500)">${j.company}</div></div>
+        ${j.remote?'<span class="badge badge-blue">Remote</span>':'<span class="badge badge-slate">On-site</span>'}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--slate-600);margin-bottom:12px">
+        <span>💰 ${j.pay}</span><span>⏰ ${j.hours}</span>
+      </div>
+      <button class="btn btn-secondary btn-full btn-sm">View Details</button>
+    </div>`).join('');
+}
+
+// ============================================================
+// SOCIAL
+// ============================================================
+function renderTips(){
+  const el=document.getElementById('tipGrid');
+  if(!el)return;
+  el.innerHTML=TIPS.map(t=>`
+    <div class="tip-card">
+      <div style="font-size:24px;margin-bottom:8px">${t.icon}</div>
+      <span class="badge badge-blue" style="margin-bottom:8px;display:inline-flex">${t.cat}</span>
+      <div style="font-size:12px;color:var(--slate-600);line-height:1.5">${t.tip}</div>
+    </div>`).join('');
+}
+function renderGroups(){
+  const el=document.getElementById('groupList');
+  if(!el)return;
+  el.innerHTML=GROUPS.map(g=>`
+    <div class="group-card">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--slate-800)">${g.name}</div>
+        <div style="font-size:12px;color:var(--slate-500)">${g.topic} · 👥 ${g.members.toLocaleString()} members</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="badge ${g.active?'badge-green':'badge-slate'}">${g.active?'● Active':'○ Quiet'}</span>
+        <button class="btn btn-primary btn-sm">Join</button>
+      </div>
+    </div>`).join('');
+}
+
+// ============================================================
+// SKILLS / FUTURE ZONE
+// ============================================================
+let courseFilter='all';
+function renderCourses(filter){
+  courseFilter=filter;
+  const el=document.getElementById('courseGrid');
+  const filEl=document.getElementById('courseFilters');
+  if(!filEl||!el)return;
+  const cats=['all','tech','digital','entrepreneurship','soft-skills','finance'];
+  const catIcons={all:'🌟',tech:'💻',digital:'📱',entrepreneurship:'🚀','soft-skills':'🗣️',finance:'💰'};
+  filEl.innerHTML=cats.map(c=>`
+    <button onclick="renderCourses('${c}')" style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid ${c===courseFilter?'var(--blue-600)':'var(--slate-200)'};background:${c===courseFilter?'var(--blue-600)':'var(--white)'};color:${c===courseFilter?'#fff':'var(--slate-600)'};font-family:'Plus Jakarta Sans',sans-serif">
+      ${catIcons[c]||''} ${c==='all'?'All Courses':c.replace('-',' ')}
+    </button>`).join('');
+  const filtered=filter==='all'?COURSES:COURSES.filter(c=>c.cat===filter);
+  const lvlColor={Beginner:'badge-green',Intermediate:'badge-amber',Advanced:'badge-red'};
+  el.innerHTML=filtered.map(c=>`
+    <div class="course-card">
+      <div style="font-size:24px;margin-bottom:8px">${c.icon}</div>
+      <div style="display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap">
+        ${c.free?'<span class="badge badge-green">Free</span>':''}
+        <span class="badge ${lvlColor[c.level]||'badge-blue'}">${c.level}</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--slate-800);margin-bottom:4px">${c.title}</div>
+      <div style="font-size:11px;color:var(--slate-400);margin-bottom:12px">${c.provider} · ${c.duration}</div>
+      <button class="btn btn-secondary btn-full btn-sm">Enroll Free →</button>
+    </div>`).join('');
+}
+function renderNews(){
+  const el=document.getElementById('newsList');
+  if(!el)return;
+  el.innerHTML=NEWS.map(n=>`
+    <div class="news-item">
+      <div style="font-size:14px;font-weight:700;color:var(--slate-800);margin-bottom:5px">${n.title}</div>
+      <div style="font-size:12px;color:var(--slate-500);margin-bottom:8px;line-height:1.5">${n.summary}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:var(--slate-400)">${n.source} · ${new Date(n.date).toLocaleDateString('en-IN')}</div>
+        <button class="btn btn-ghost btn-sm">Read →</button>
+      </div>
+    </div>`).join('');
+}
+
+// ============================================================
+// PROFILE
+// ============================================================
+function loadProfileForm(){
+  document.getElementById('profName').value=currentUser.name||'';
+  document.getElementById('profCollege').value=currentUser.college||'';
+  document.getElementById('profCourse').value=currentUser.course||'';
+  document.getElementById('profYear').value=currentUser.year||1;
+  document.getElementById('profBio').value=currentUser.bio||'';
+  document.getElementById('pomWork').value=currentUser.preferences?.pomodoroWork||25;
+  document.getElementById('pomBreak').value=currentUser.preferences?.pomodoroBreak||5;
+  document.getElementById('pomWorkVal').textContent=currentUser.preferences?.pomodoroWork||25;
+  document.getElementById('pomBreakVal').textContent=currentUser.preferences?.pomodoroBreak||5;
+  renderProfile();
+  renderAchievements();
+}
+function renderProfile(){
+  const el=document.getElementById('profileBanner');
+  if(!el)return;
+  const sessions=DB.get('sessions',[]);
+  const totalMin=sessions.reduce((s,se)=>s+se.duration,0);
+  el.innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--blue-700),var(--blue-600),var(--green-600));border-radius:var(--radius-xl);padding:22px 24px;color:#fff">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:26px;font-weight:800">${currentUser.name[0].toUpperCase()}</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800">${currentUser.name}</div>
+          <div style="font-size:12px;opacity:.8">${currentUser.email}</div>
+          <div style="font-size:12px;opacity:.7">${currentUser.course||''}${currentUser.college?' · '+currentUser.college:''}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center"><div style="font-size:18px">🔥</div><div style="font-size:18px;font-weight:800">${currentUser.studyStreak||0}</div><div style="font-size:10px;opacity:.75">Day Streak</div></div>
+        <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center"><div style="font-size:18px">⏱️</div><div style="font-size:18px;font-weight:800">${Math.floor(totalMin/60)}h</div><div style="font-size:10px;opacity:.75">Studied</div></div>
+        <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center"><div style="font-size:18px">⚡</div><div style="font-size:18px;font-weight:800">${currentUser.xp||0}</div><div style="font-size:10px;opacity:.75">XP Points</div></div>
+        <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center"><div style="font-size:18px">🏅</div><div style="font-size:18px;font-weight:800">${DB.get('tasks',[]).filter(t=>t.status==='done').length}</div><div style="font-size:10px;opacity:.75">Tasks Done</div></div>
+      </div>
+    </div>`;
+}
+function renderAchievements(){
+  const el=document.getElementById('achievementGrid');
+  if(!el)return;
+  const sessions=DB.get('sessions',[]);
+  const totalMin=sessions.reduce((s,se)=>s+se.duration,0);
+  const achievements=[
+    {icon:'🔥',label:'First Streak',earned:(currentUser.studyStreak||0)>=1},
+    {icon:'📚',label:'10h Studied',earned:totalMin>=600},
+    {icon:'✅',label:'Task Master',earned:DB.get('tasks',[]).filter(t=>t.status==='done').length>=5},
+    {icon:'🧠',label:'Mindful',earned:DB.get('moods',[]).length>=3},
+    {icon:'🚀',label:'Career Pro',earned:false},
+    {icon:'⚡',label:'100 XP',earned:(currentUser.xp||0)>=100}
+  ];
+  el.innerHTML=achievements.map(a=>`
+    <div class="achv-badge ${a.earned?'earned':'locked'}">
+      <div class="achv-icon">${a.icon}</div>
+      <div class="achv-label">${a.label}</div>
+    </div>`).join('');
+}
+function saveProfile(){
+  currentUser.name=document.getElementById('profName').value.trim()||currentUser.name;
+  currentUser.college=document.getElementById('profCollege').value.trim();
+  currentUser.course=document.getElementById('profCourse').value.trim();
+  currentUser.year=document.getElementById('profYear').value;
+  currentUser.bio=document.getElementById('profBio').value.trim();
+  currentUser.preferences={pomodoroWork:parseInt(document.getElementById('pomWork').value),pomodoroBreak:parseInt(document.getElementById('pomBreak').value)};
+  saveUserData();updateSidebar();updateTopbar();
+  renderProfile();
+  showToast('✅ Profile saved!');
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+window.addEventListener('load',()=>{
+  const saved=DB.getObj('currentUser',null);
+  if(saved&&saved.id){currentUser=saved;showMain()}
+  else{showAuth();showLogin()}
+  // Responsive sidebar
+  const mq=window.matchMedia('(max-width:600px)');
+  document.getElementById('hamburger').style.display=mq.matches?'flex':'none';
+  mq.addEventListener('change',e=>{document.getElementById('hamburger').style.display=e.matches?'flex':'none'});
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+});
+</script>
+</body>
+</html>
